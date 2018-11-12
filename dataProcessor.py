@@ -3,9 +3,22 @@ import matplotlib.pyplot as plt
 
 
 class Data():
-    def __init__(self,filePath):
-        self.filePath = filePath
+    def __init__(self,filePath,labelPath,categoryPath):
         self.images = np.load(filePath,encoding='bytes')
+        self.labels = []
+
+        with open(labelPath,"r") as f:      #store in list self.labels all the labels with index of list corresponding to index of image
+            data = f.readlines()
+        for i in range(1,len(data)):
+            self.labels.append(data[i].split(',')[1].strip("\n"))
+
+        self.categories = {}
+
+        with open(categoryPath,"r") as f:
+            data = f.readlines()
+        for i in range(0,len(data)):
+            self.categories[data[i]] = i
+
 
     def getImage(self,imageIndex,reshape=False):
         if reshape:
@@ -20,10 +33,10 @@ class Data():
         plt.imshow(img)
         plt.show()
 
+    def createLabelledTraining(self,savingPath):
+        pass
+
 if __name__ == "__main__":
-    data = Data("Data/train_images.npy")
-    print(data.getImage(1,True))
-    print(data.ID(1))
-    data.showImage(1)
+    data = Data(filePath="Data/train_images.npy",labelPath="Data/train_labels.csv",categoryPath="Data/categories.csv")
 
 
