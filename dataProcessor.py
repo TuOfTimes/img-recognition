@@ -12,7 +12,7 @@ class Data():
             return self.images[imageIndex][1].reshape(100,100)
         return self.images[imageIndex][1]
 
-    def getClass(self,imageIndex):
+    def getID(self,imageIndex):
         return self.images[imageIndex][0]
 
     def showImage(self,imageIndex):
@@ -23,7 +23,7 @@ class Data():
 if __name__ == "__main__":
     data = Data("Data/train_images.npy")
     print(data.getImage(1,True))
-    print(data.getClass(1))
+    print(data.ID(1))
     data.showImage(1)
 
 
