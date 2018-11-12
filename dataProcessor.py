@@ -18,6 +18,7 @@ class Data():
     def showImage(self,imageIndex):
         img = self.getImage(imageIndex,True)
         plt.imshow(img)
+        plt.show()
 
 if __name__ == "__main__":
     data = Data("Data/train_images.npy")
