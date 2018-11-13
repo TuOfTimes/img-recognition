@@ -34,6 +34,11 @@ class Data():
         plt.show()
 
     def createLabelledTraining(self,savingPath):
+        '''
+        Saves a new .npy file at the saving path containing a 2D array:
+        - 1st index -> class ID (0 - 31)
+        - 2nd index ->vector containing image data (10000 points)
+        '''
         pass
 
 if __name__ == "__main__":
