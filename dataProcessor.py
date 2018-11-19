@@ -3,7 +3,8 @@ import matplotlib.pyplot as plt
 from skimage.measure import label,regionprops
 from skimage.transform import resize
 
-class ImageData():
+class ImageProcessor():
+
     def __init__(self,filePath,labelPath,categoryPath):
         self.images = np.load(filePath,encoding='bytes')
         self.labels = []
@@ -33,7 +34,7 @@ class ImageData():
         plt.imshow(img)
         plt.show()
 
-    def getFilteredImage(self,imageIndex,mask_val=200,dims=(50,50),binaryRepresentation=True,min_area=100):
+    def getProcessedImage(self,imageIndex,mask_val=100,dims=(50,50),binaryRepresentation=False,min_area=100):
         '''
         Sets all pixels above mask value to 255 and those below to 0 then
         Creates bounding boxes around each connected set of pixels
@@ -50,9 +51,12 @@ class ImageData():
         if area < min_area:     #if bounding box area is less than the minimum area specified assume empty image
             return np.zeros(dims)
 
-
         if binaryRepresentation:
             selected_img = masked_img[min(coords[0],coords[2]):max(coords[0],coords[2]),min(coords[1],coords[3]):max(coords[1],coords[3])]
+            for i in range(0, len(selected_img)):
+                for j in range(0,len(selected_img[i])):
+                    if selected_img[i][j] != 0:
+                        selected_img[i][j] = 1
         else:
             selected_img = img[min(coords[0],coords[2]):max(coords[0],coords[2]),min(coords[1],coords[3]):max(coords[1],coords[3])]
 
@@ -92,16 +96,35 @@ class ImageData():
                 if i<bbox[0] or i>bbox[2] or j<bbox[1] or j>bbox[3]:
                     img[i][j] = 0
 
-    def getLabelledData(self):
-        '''
-        Returns a 2D array:
-        - 1st index -> class ID (0 - 31)
-        - 2nd index ->vector containing image data (10000 points)
-        '''
+    # def getLabelledData(self):
+    #     '''
+    #     Returns a 2D array:
+    #     - 1st index -> class ID (0 - 31)
+    #     - 2nd index ->vector containing image data (10000 points)
+    #     '''
+    #     output = []
+    #     for i in range(0,len(self.labels)):
+    #         output.append([self.categories[self.labels[i]]])
+    #         output[i].append(self.images[i][1])
+    #     return output
+
+
+    def getProcessedImages(self,mask_val=50,dims=(50,50),binaryRepresentation=False,min_area=100):
+        processed_images = []
+        for i in range(0,len(self.images)):
+            img = self.getProcessedImage(i,mask_val=mask_val,dims=dims,binaryRepresentation=binaryRepresentation,min_area=min_area)
+            img = img.reshape(dims[0]*dims[1])
+            processed_images.append(img)
+        return processed_images
+
+    def labelImages(self,images):
         output = []
+        if len(images) != len(self.labels):
+            return output
+
         for i in range(0,len(self.labels)):
             output.append([self.categories[self.labels[i]]])
-            output[i].append(self.images[i][1])
+            output[i].append(images[i])
         return output
 
     @staticmethod
@@ -109,10 +132,34 @@ class ImageData():
         plt.imshow(img)
         plt.show()
 
+
+class ImageFileHandler():
+
+    def __init__(self,imagePath):
+        self.images = np.load(imagePath,encoding="bytes")
+
+    @staticmethod
+    def saveNPYFile(img,img_path):
+        if img_path[-4:] != ".npy":
+            print("Invalid File Path")
+            return
+        np.save(img_path,img)
+
 if __name__ == "__main__":
-    data = ImageData(filePath="Data/train_images.npy",labelPath="Data/train_labels.csv",categoryPath="Data/categories.csv")
-    img = data.getFilteredImage(imageIndex=78,mask_val=50,min_area=125)
-    ImageData.showImage(img)
+    DATA_PATH = "Data/Raw/"
+
+    img_processor = ImageProcessor(filePath=DATA_PATH+"train_images.npy",
+                                   labelPath=DATA_PATH+"train_labels.csv",
+                                   categoryPath=DATA_PATH+"categories.csv")
+
+    processed_imgs = img_processor.getProcessedImages()
+    labelled_imgs = img_processor.labelImages(processed_imgs)
+
+    ifm = ImageFileHandler.saveNPYFile(labelled_imgs,"Data/Processed/training_data.npy")
+
+    # img = img_processor.getProcessedImage(imageIndex=0,mask_val=50,min_area=125)
+    # img_processor.showImage(img)
+
     #label_data = data.getLabelledData()
     #data.showImageAtIndex(43)
 
