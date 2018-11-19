@@ -2,3 +2,4 @@ data
 *.ipynb
 Data/*
 test
+Data/Raw/*
