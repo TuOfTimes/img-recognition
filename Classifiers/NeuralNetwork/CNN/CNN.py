@@ -1,12 +1,15 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+# need Data in current directory
+
 # In[1]:
 
 
 import numpy as np
 import csv
 
+# open labels and categories
 with open('Data/categories.csv', mode='r') as infile:
     reader = csv.reader(infile)
     categories = {row[0]:i for i, row in enumerate(reader)}
@@ -26,7 +29,7 @@ for i, image in enumerate(images):
 
 # In[2]:
 
-
+# train test split
 from sklearn.model_selection import train_test_split
 
 X_train, X_val, y_train, y_val = train_test_split([item[1] for item in images], [item[0] for item in images], test_size=0.20, random_state=42)
@@ -34,7 +37,7 @@ X_train, X_val, y_train, y_val = train_test_split([item[1] for item in images], 
 
 # In[3]:
 
-
+# preprocess images
 from skimage.measure import label,regionprops
 from skimage.transform import resize
 
@@ -113,8 +116,8 @@ for i, img in enumerate(X_val):
 
 # In[4]:
 
-
-print(len(X_train), len(X_val))
+# print to check lengths
+# print(len(X_train), len(X_val))
 
 
 # In[ ]:
@@ -122,8 +125,9 @@ print(len(X_train), len(X_val))
 
 import matplotlib.pyplot as plt
 
-plt.imshow(X_train[1], cmap=plt.cm.binary)
-plt.show()
+# view images (can comment out)
+# plt.imshow(X_train[1], cmap=plt.cm.binary)
+# plt.show()
 
 
 # In[5]:
@@ -145,6 +149,7 @@ for directory in range(31):
 
 from PIL import Image
 
+# store processed images in individual folders
 i = 0
 for img_array, label in zip(X_train, y_train):
     im = Image.fromarray(img_array)
@@ -169,14 +174,14 @@ from keras import backend as K
 
 
 # dimensions of our images.
-# EDIT THIS
-img_width, img_height = 100, 100
+
+img_width, img_height = 50, 50 # IMAGE DIMENSIONS
 train_data_dir = 'data/train'
 validation_data_dir = 'data/valid'
 
 nb_train_samples = 8000
 nb_validation_samples = 2000
-epochs = 50
+epochs = 50 # NUMBER OF EPOCHS
 batch_size = 16
 
 if K.image_data_format() == 'channels_first':
