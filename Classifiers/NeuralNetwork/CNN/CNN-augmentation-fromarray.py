@@ -9,7 +9,7 @@
 import numpy as np
 
 # separate images by labels
-images = np.load('Data/processed_train_image.npy', encoding='bytes')
+images = np.load('Data/processed_train_images.npy', encoding='bytes')
 
 
 # In[2]:
@@ -45,31 +45,23 @@ X_other, X_val, y_other, y_val = train_test_split(X_array, y_array, test_size=0.
 X_train, X_test, y_train, y_test = train_test_split(X_other, y_other, test_size=0.25, random_state=24)
 
 
-# In[14]:
+# In[5]:
 
 
 print(len(X_train), len(X_val), len(X_test))
 
 
-# In[7]:
+# In[8]:
 
 
 import matplotlib.pyplot as plt
-
-plt.imshow(X_train[1].reshape(50,50), cmap=plt.cm.binary)
-plt.show()
-
-
-# In[24]:
-
-
 for i in range(9):
     plt.subplot(3,3,i+1)
     plt.imshow(X_train[i].reshape(50,50), cmap='gray', interpolation='none')
     plt.title("Class {}".format(np.argmax(y_train[i])))
 
 
-# In[8]:
+# In[9]:
 
 
 from keras.preprocessing.image import ImageDataGenerator
@@ -85,7 +77,7 @@ img_width, img_height = 50,50
 
 nb_train_samples = 6000
 nb_validation_samples = 2000
-epochs = 20
+epochs = 3
 batch_size = 16
 
 if K.image_data_format() == 'channels_first':
@@ -94,12 +86,13 @@ else:
     input_shape = (img_width, img_height, 1)
 
 
-# In[55]:
+# In[10]:
 
 
 model = Sequential()
 model.add(Conv2D(32, (3, 3), input_shape=input_shape))
 model.add(Activation('relu'))
+# model.add(MaxPooling2D(pool_size=(2, 2)))
 
 model.add(Conv2D(64, (3, 3)))
 model.add(Activation('relu'))
@@ -127,7 +120,7 @@ model.compile(loss='categorical_crossentropy',
 # model.load_weights('weights/CNN-augmentation1.h5')
 
 
-# In[10]:
+# In[11]:
 
 
 # this is the augmentation configuration we will use for training
@@ -137,7 +130,7 @@ train_datagen = ImageDataGenerator(
     horizontal_flip=True)
 
 
-# In[11]:
+# In[ ]:
 
 
 # this is the augmentation configuration we will use for testing:
@@ -161,7 +154,7 @@ model.fit_generator(
     validation_data=validation_generator,
     validation_steps=nb_validation_samples // batch_size)
 
-model.save_weights('weights/CNN-augmentation.h5')
+model.save_weights('weights/CNN-augmentation1.h5')
 
 
 # In[57]:
@@ -180,7 +173,7 @@ print('Test accuracy:', score[1])
 # incorrect_indices = np.nonzero(predicted_classes != [np.argmax(i) for i in y_test])[0]
 
 
-# # In[58]:
+# In[58]:
 
 
 # plt.figure()
