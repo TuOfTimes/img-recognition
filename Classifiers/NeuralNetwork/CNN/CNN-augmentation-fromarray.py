@@ -18,12 +18,14 @@ from keras.layers import Activation, Dropout, Flatten, Dense
 from keras import backend as K
 
 # CHANGE THESE IF YOU WANT
-epochs = 3
 image_src = '../../../Data/Processed/train_data_non_bin.npy'
+
+epochs = 3
 img_width, img_height = 50,50
-save_weights = 'weights/save.h5'
-output_file = 'output/5050_padding0_epochs3.txt'
 batch_size = 64
+
+save_weights = 'save.h5'
+output_file = '5050_padding0_epochs3.txt'
 
 # 
 f = open(output_file, 'w')
