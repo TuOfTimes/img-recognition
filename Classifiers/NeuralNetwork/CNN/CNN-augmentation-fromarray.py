@@ -3,25 +3,42 @@
 
 # In[1]:
 
+import numpy as np
+import sys
+sys.path.append("../../../")
+from dataProcessor import ImageFileHandler
+from keras.utils import np_utils
+from sklearn.model_selection import train_test_split
+import matplotlib.pyplot as plt
+
+from keras.preprocessing.image import ImageDataGenerator
+from keras.models import Sequential
+from keras.layers import Conv2D, MaxPooling2D
+from keras.layers import Activation, Dropout, Flatten, Dense
+from keras import backend as K
+
+# CHANGE THESE IF YOU WANT
+epochs = 3
+image_src = '../../../Data/Processed/train_data_non_bin.npy'
+img_width, img_height = 50,50
+save_weights = 'weights/save.h5'
+output_file = 'output/5050_padding0_epochs3.txt'
+batch_size = 64
+
+# 
+f = open(output_file, 'w')
 
 # import labels and images from file
-
-import numpy as np
-
-# separate images by labels
-images = np.load('Data/processed_train_images.npy', encoding='bytes')
+images = ImageFileHandler(image_src, y_index=0)
 
 
 # In[2]:
-
-
-from keras.utils import np_utils
-
-X = [item[1] for item in images]
-y = [item[0] for item in images]
+X = images.xMatrix
+y = images.yVector
 
 X_array = np.array(X)
-X_array = X_array.reshape(X_array.shape[0], 50, 50, 1)
+f.write("%s: %s" % ("input shape", X_array.shape))
+X_array = X_array.reshape(X_array.shape[0], img_width, img_height, 1)
 X_array = X_array.astype('float64')
 X_array /= 255
 
@@ -30,60 +47,35 @@ y_array = np_utils.to_categorical(y_array, 31)
 
 
 # In[3]:
-
-
 y_array[0]
 
 
 # In[4]:
-
-
 # train-validation split
-from sklearn.model_selection import train_test_split
-
 X_other, X_val, y_other, y_val = train_test_split(X_array, y_array, test_size=0.20, random_state=42)
 X_train, X_test, y_train, y_test = train_test_split(X_other, y_other, test_size=0.25, random_state=24)
 
 
 # In[5]:
-
-
-print(len(X_train), len(X_val), len(X_test))
+f.write("%s: %s\n" % ("training points: ", len(X_train)))
+f.write("%s: %s\n" % ("validation points: ", len(X_val)))
+f.write("%s: %s\n" % ("test points: ", len(X_test)))
 
 
 # In[8]:
-
-
-import matplotlib.pyplot as plt
-for i in range(9):
-    plt.subplot(3,3,i+1)
-    plt.imshow(X_train[i].reshape(50,50), cmap='gray', interpolation='none')
-    plt.title("Class {}".format(np.argmax(y_train[i])))
+# display first 9 images and their classes
+# for i in range(9):
+#     plt.subplot(3,3,i+1)
+#     plt.imshow(X_train[i].reshape(50,50), cmap='gray', interpolation='none')
+#     plt.title("Class {}".format(np.argmax(y_train[i])))
+# plt.show()
 
 
 # In[9]:
 
-
-from keras.preprocessing.image import ImageDataGenerator
-from keras.models import Sequential
-from keras.layers import Conv2D, MaxPooling2D
-from keras.layers import Activation, Dropout, Flatten, Dense
-from keras import backend as K
-
-
-# dimensions of our images.
-# EDIT THIS
-img_width, img_height = 50,50
-
 nb_train_samples = 6000
 nb_validation_samples = 2000
-epochs = 3
-batch_size = 16
-
-if K.image_data_format() == 'channels_first':
-    input_shape = (1, img_width, img_height)
-else:
-    input_shape = (img_width, img_height, 1)
+input_shape = (img_width, img_height, 1)
 
 
 # In[10]:
@@ -92,7 +84,7 @@ else:
 model = Sequential()
 model.add(Conv2D(32, (3, 3), input_shape=input_shape))
 model.add(Activation('relu'))
-# model.add(MaxPooling2D(pool_size=(2, 2)))
+model.add(MaxPooling2D(pool_size=(2, 2)))
 
 model.add(Conv2D(64, (3, 3)))
 model.add(Activation('relu'))
@@ -154,15 +146,15 @@ model.fit_generator(
     validation_data=validation_generator,
     validation_steps=nb_validation_samples // batch_size)
 
-model.save_weights('weights/CNN-augmentation1.h5')
+model.save_weights(save_weights)
 
 
 # In[57]:
 
 
 score = model.evaluate(X_test, y_test, verbose=0)
-print('Test score:', score[0])
-print('Test accuracy:', score[1])
+f.write("%s: %s\n" % ("Test score", score[0]))
+f.write("%s: %s\n" % ("Test accuracy", score[1]))
 
 
 # In[47]:
@@ -188,3 +180,4 @@ print('Test accuracy:', score[1])
 #     plt.imshow(X_test[incorrect].reshape(50,50), cmap='gray', interpolation='none')
 #     plt.title("Predicted {}, Class {}".format(predicted_classes[incorrect], np.argmax(y_test[incorrect])))
 
+f.close()
