@@ -35,6 +35,7 @@ X_train, X_val, y_train, y_val = train_test_split([item[1] for item in images], 
 # In[3]:
 
 
+
 from skimage.measure import label,regionprops
 from skimage.transform import resize
 
@@ -176,9 +177,9 @@ validation_data_dir = 'data/valid'
 
 nb_train_samples = 8000
 nb_validation_samples = 2000
-epochs = 50
+epochs = 1
 batch_size = 16
-
+print("I am here")
 if K.image_data_format() == 'channels_first':
     input_shape = (3, img_width, img_height)
 else:
