@@ -3,3 +3,4 @@ data
 Data/*
 test
 Data/Raw/*
+Classifiers/NeuralNetwork/CNN/Data/
