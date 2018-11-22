@@ -36,7 +36,7 @@ class ImageProcessor():
         plt.imshow(img)
         plt.show()
 
-    def getProcessedImage(self,imageIndex,mask_val=100,dims=(50,50),binaryRepresentation=False,min_area=100):
+    def getProcessedImage(self,imageIndex,mask_val=100,dims=(50,50),binaryRepresentation=False,min_area=100, padding_to_add=0):
         '''
         Sets all pixels above mask value to 255 and those below to 0 then
         Creates bounding boxes around each connected set of pixels
@@ -52,6 +52,7 @@ class ImageProcessor():
         area = height * width
         if area < min_area:     #if bounding box area is less than the minimum area specified assume empty image
             return np.zeros(dims)
+
 
         if binaryRepresentation:
             selected_img = masked_img[min(coords[0],coords[2]):max(coords[0],coords[2]),min(coords[1],coords[3]):max(coords[1],coords[3])]
@@ -182,6 +183,30 @@ def processTrainingData():
     labelled_imgs_b = img_processor.labelImages(processed_imgs_b)
     ImageFileHandler.saveNPYFile(labelled_imgs_b, "Data/Processed/train_data_bin.npy")
 
+def processTestData():
+    DATA_PATH = "Data/Raw/"
+    DATA_PROCESSED_PATH = "Data/Processed/"
+
+    img_processor = ImageProcessor(filePath=DATA_PATH + "test_images.npy")
+
+    # Create Non-Binary representation
+    processed_imgs_nb = img_processor.getProcessedImages(mask_val=50,
+                                                         dims=(50, 50),
+                                                         binaryRepresentation=False,
+                                                         min_area=100)
+
+    labelled_imgs_nb = img_processor.labelImages(processed_imgs_nb)
+    ifm = ImageFileHandler.saveNPYFile(labelled_imgs_nb, "Data/Processed/test_data_non_bin.npy")
+
+    # Create Binary Representation
+    processed_imgs_b = img_processor.getProcessedImages(mask_val=50,
+                                                        dims=(50, 50),
+                                                        binaryRepresentation=True,
+                                                        min_area=100)
+
+    labelled_imgs_b = img_processor.labelImages(processed_imgs_b)
+    ImageFileHandler.saveNPYFile(labelled_imgs_b, "Data/Processed/test_data_bin.npy")
+
 
 if __name__ == "__main__":
     DATA_PROCESSED_PATH = "Data/Processed/"
@@ -190,10 +215,10 @@ if __name__ == "__main__":
 
     imf_nb = ImageFileHandler(imagePath=DATA_PROCESSED_PATH+"train_data_bin.npy",
                               y_index=0)
-    img = imf_nb.xMatrix[18]
+    img = imf_nb.xMatrix[31]
     ImageProcessor.showImage(img,True,(50,50))
-
-
-    # img = img_processor.getProcessedImage(imageIndex=0,mask_val=50,min_area=125)
+    print(imf_nb.yVector[31])
+    # img_processor = ImageProcessor("Data/Raw/train_images.npy")
+    # img = img_processor.getProcessedImage(imageIndex=31,mask_val=50,min_area=125)
     # img_processor.showImage(img)
 

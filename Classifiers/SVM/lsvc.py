@@ -1,7 +1,6 @@
 from sklearn.svm import LinearSVC
 from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import f1_score
-from sklearn.model_selection import PredefinedSplit
 import sys
 sys.path.append("../")
 
