@@ -1,5 +1,5 @@
 from dataProcessor import ImageFileHandler
-from SVM.lsvc import LinearSupportVectorClassifier
+from Classifiers.SVM.lsvc import LinearSupportVectorClassifier
 
 if __name__ == "__main__":
     DataPath = "Data/Processed/"
@@ -9,3 +9,7 @@ if __name__ == "__main__":
     ls_bin = LinearSupportVectorClassifier(imf_bin.xMatrix,imf_bin.yVector)
     ls_non_bin = LinearSupportVectorClassifier(imf_non_bin.xMatrix,imf_non_bin.yVector)
 
+    ls_non_bin.train()
+
+    td = ImageFileHandler(DataPath+"test_data_non_bin.npy")
+    print(ls_non_bin.predict(td.xMatrix))

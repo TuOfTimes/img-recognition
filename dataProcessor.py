@@ -65,6 +65,7 @@ class ImageProcessor():
 
         return resize(selected_img,dims)
 
+
     def mask_image(self,img,mask_val):
         img_copy = img.copy()
         for i in range(0, len(img_copy)):
@@ -185,7 +186,6 @@ def processTrainingData():
 
 def processTestData():
     DATA_PATH = "Data/Raw/"
-    DATA_PROCESSED_PATH = "Data/Processed/"
 
     img_processor = ImageProcessor(filePath=DATA_PATH + "test_images.npy")
 
@@ -195,8 +195,7 @@ def processTestData():
                                                          binaryRepresentation=False,
                                                          min_area=100)
 
-    labelled_imgs_nb = img_processor.labelImages(processed_imgs_nb)
-    ifm = ImageFileHandler.saveNPYFile(labelled_imgs_nb, "Data/Processed/test_data_non_bin.npy")
+    ifm = ImageFileHandler.saveNPYFile(processed_imgs_nb, "Data/Processed/test_data_non_bin.npy")
 
     # Create Binary Representation
     processed_imgs_b = img_processor.getProcessedImages(mask_val=50,
@@ -204,8 +203,7 @@ def processTestData():
                                                         binaryRepresentation=True,
                                                         min_area=100)
 
-    labelled_imgs_b = img_processor.labelImages(processed_imgs_b)
-    ImageFileHandler.saveNPYFile(labelled_imgs_b, "Data/Processed/test_data_bin.npy")
+    ImageFileHandler.saveNPYFile(processed_imgs_b, "Data/Processed/test_data_bin.npy")
 
 
 if __name__ == "__main__":
@@ -222,4 +220,9 @@ if __name__ == "__main__":
     # img = img_processor.getProcessedImage(imageIndex=31,mask_val=50,min_area=125)
     # img_processor.showImage(img)
 
-    processTestData()
+    #processTestData()
+    imf = ImageFileHandler(imagePath="Data/Processed/test_data_non_bin.npy")
+    ImageProcessor.showImage(imf.xMatrix[5],True,(50,50))
+
+    imp = ImageProcessor("Data/Raw/test_images.npy")
+    imp.showImageAtIndex(5)

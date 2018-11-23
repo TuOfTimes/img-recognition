@@ -26,7 +26,7 @@ img_width, img_height = 50,50
 output_csv = 'submission.csv'
 
 # separate images by labels
-images = ImageFileHandler(test_src, y_index=0)
+images = ImageFileHandler(test_src)
 
 
 # In[19]:
