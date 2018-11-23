@@ -209,16 +209,17 @@ def processTestData():
 
 
 if __name__ == "__main__":
-    DATA_PROCESSED_PATH = "Data/Processed/"
-    #processTrainingData()
-
-
-    imf_nb = ImageFileHandler(imagePath=DATA_PROCESSED_PATH+"train_data_bin.npy",
-                              y_index=0)
-    img = imf_nb.xMatrix[31]
-    ImageProcessor.showImage(img,True,(50,50))
-    print(imf_nb.yVector[31])
-    # img_processor = ImageProcessor("Data/Raw/train_images.npy")
+    # DATA_PROCESSED_PATH = "Data/Processed/"
+    # #processTrainingData()
+    #
+    #
+    # imf_nb = ImageFileHandler(imagePath=DATA_PROCESSED_PATH+"train_data_bin.npy",
+    #                           y_index=0)
+    # img = imf_nb.xMatrix[31]
+    # ImageProcessor.showImage(img,True,(50,50))
+    # print(imf_nb.yVector[31])
+    # # img_processor = ImageProcessor("Data/Raw/train_images.npy")
     # img = img_processor.getProcessedImage(imageIndex=31,mask_val=50,min_area=125)
     # img_processor.showImage(img)
 
+    processTestData()
