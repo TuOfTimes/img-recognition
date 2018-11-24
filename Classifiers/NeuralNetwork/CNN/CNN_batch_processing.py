@@ -1,35 +1,120 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[1]:
-
 import numpy as np
 import sys
-
 sys.path.append("../../../")
 from dataProcessor import ImageFileHandler
 from keras.utils import np_utils
 from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
-
 from keras.preprocessing.image import ImageDataGenerator
 from keras.models import Sequential
 from keras.layers import Conv2D, MaxPooling2D
 from keras.layers import Activation, Dropout, Flatten, Dense
-from keras import backend as K
+import logging
 
-# CHANGE THESE IF YOU WANT
-image_src = '../../../Data/Processed/train_data_non_bin.npy'
+logging.basicConfig(filename="q2.log",level=logging.INFO)
 
-epochs = 3
-img_width, img_height = 50, 50
-batch_size = 64
+def logging_wrapper(func):
+    def inner(*args, **kwargs):
+        try:
+            func(*args, **kwargs)
+        except Exception as e:
+            logging.exception("There was an exception {} in function {}".format(str(e),str(func)))
+    return inner
 
-save_weights = 'save.h5'
-output_file = '5050_padding0_epochs3.txt'
+@logging_wrapper
+def create_submission(test_src,categories_csv,weight_file,img_width,img_height,output_csv):
+    # separate images by labels
+    images = ImageFileHandler(test_src)
 
-#
-def run_CNN(img_src,epochs,img_width,img_height,save_weights,output_file):
+
+    # In[19]:
+
+    X = images.xMatrix
+
+    X_array = np.array(X)
+    X_array = X_array.reshape(X_array.shape[0], img_width, img_height, 1)
+    X_array = X_array.astype('float64')
+    X_array /= 255
+
+
+    # In[20]:
+
+
+
+    # dimensions of our images
+
+    # nb_train_samples = 6000
+    # nb_validation_samples = 2000
+    input_shape = (img_width, img_height, 1)
+
+    # In[21]:
+
+
+    model = Sequential()
+    model.add(Conv2D(32, (3, 3), input_shape=input_shape))
+    model.add(Activation('relu'))
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+
+    model.add(Conv2D(64, (3, 3)))
+    model.add(Activation('relu'))
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+
+    model.add(Conv2D(128, (3, 3)))
+    model.add(Activation('relu'))
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+
+    model.add(Flatten())
+    model.add(Dense(64))
+    model.add(Activation('relu'))
+    model.add(Dropout(0.5))
+    model.add(Dense(31))
+    model.add(Activation('sigmoid'))
+
+    model.compile(loss='categorical_crossentropy',
+                  optimizer='adam',
+                  metrics=['accuracy'])
+
+
+    # In[22]:
+
+
+    model.load_weights(weight_file)
+
+
+    # In[24]:
+
+
+    predicted_classes = model.predict_classes(X_array)
+
+
+    # In[25]:
+
+
+    predicted_classes[:10]
+
+
+    # In[26]:
+
+
+    # open number to category csv file
+    import csv
+    with open(categories_csv, mode='r') as infile:
+        reader = csv.reader(infile)
+        categories = {i:row[0] for i, row in enumerate(reader)}
+
+
+    # In[30]:
+
+
+    with open(output_csv,'w') as file:
+        file.write('Id,Category\n')
+        for i, prediction in enumerate(predicted_classes):
+            file.write(str(i) + ',' + categories[prediction])
+            file.write('\n')
+
+
+@logging_wrapper
+def run_CNN(image_src,epochs,img_width,img_height,save_weights,output_file):
     f = open(output_file, 'w')
 
     # import labels and images from file
@@ -143,10 +228,47 @@ def run_CNN(img_src,epochs,img_width,img_height,save_weights,output_file):
 
 
 if __name__ == "__main__":
-    run_CNN(image_src=image_src,
-            epochs=epochs,
-            img_width=img_width,
-            img_height=img_height,
-            batch_size = batch_size,
-            save_weights=save_weights,
-            output_file=output_file)
+    epochs_list = (100,200)
+    batch_size_list = (16,32,64)
+    mask_val_list = (1,50,100)
+    padding_val_list = (0,5,10)
+    min_area_list = (0,100)
+
+    for epochs in epochs_list:
+        for batch_size in batch_size_list:
+            for mask_val in mask_val_list:
+                for padding_val in padding_val_list:
+                    for min_area in min_area_list:
+                        logging.info("E-{}, B-{}, M-{}, P-{}, A-{}".format(epochs,batch_size,mask_val,padding_val,min_area))
+
+                        image_src = '../../../Data/Processed/train_m{}_p{}_a{}.npy'.format(mask_val,padding_val,min_area)
+
+                        img_width, img_height = 50, 50
+
+                        save_weights = 'Outputs/Weights/e{}_b{}_m_{}_p{}_a{}.h5'.format(epochs,batch_size,mask_val,padding_val,min_area)
+                        output_file = 'Outputs/TestScores/e{}_b{}_m_{}_p{}_a{}.txt'.format(epochs,batch_size,mask_val,padding_val,min_area)
+
+                        logging.info("Running CNN")
+                        run_CNN(image_src=image_src,
+                                epochs=epochs,
+                                img_width=img_width,
+                                img_height=img_height,
+                                batch_size = batch_size,
+                                save_weights=save_weights,
+                                output_file=output_file)
+
+
+                        test_src = '../../../Data/Processed/test_m{}_p{}_a{}.npy'.format(mask_val,padding_val,min_area)
+                        categories_csv = '../../../Data/categories.csv'
+                        weight_file = save_weights
+                        output_csv = 'Outputs/Submissions/e{}_b{}_m_{}_p{}_a{}.csv'.format(epochs,batch_size,mask_val,padding_val,min_area)
+
+
+                        logging.info("Creating Submissions")
+                        create_submission(test_src=test_src,
+                                          categories_csv=categories_csv,
+                                          img_height=img_height,
+                                          img_width=img_width,
+                                          weight_file=weight_file,
+                                          output_csv=output_csv
+                                          )
