@@ -16,3 +16,8 @@ we will pick the best model to compete in a Kaggle Competition.
 ### SVM
 * C
 * tol
+
+
+## Sunmissions:
+* e200_b32_m_1_p5_a0
+* e200_b64_m1_p5_a0

@@ -114,11 +114,11 @@ def create_submission(test_src,categories_csv,weight_file,img_width,img_height,o
 
 
 @logging_wrapper
-def run_CNN(image_src,epochs,img_width,img_height,save_weights,output_file):
+def run_CNN(image_src,epochs,batch_size,img_width,img_height,save_weights,output_file):
     f = open(output_file, 'w')
 
     # import labels and images from file
-    images = ImageFileHandler(image_src)
+    images = ImageFileHandler(image_src,y_index=0)
 
     # In[2]:
     X = images.xMatrix
@@ -259,7 +259,7 @@ if __name__ == "__main__":
 
 
                         test_src = '../../../Data/Processed/test_m{}_p{}_a{}.npy'.format(mask_val,padding_val,min_area)
-                        categories_csv = '../../../Data/categories.csv'
+                        categories_csv = '../../../Data/Raw/categories.csv'
                         weight_file = save_weights
                         output_csv = 'Outputs/Submissions/e{}_b{}_m_{}_p{}_a{}.csv'.format(epochs,batch_size,mask_val,padding_val,min_area)
 

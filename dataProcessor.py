@@ -20,7 +20,6 @@ class ImageProcessor():
                 data = f.readlines()
             for i in range(0,len(data)):
                 self.categories[data[i].strip('\n')] = i
-            print(self.categories)
 
     def getImage(self,imageIndex,reshape=False):
         if reshape:
@@ -268,14 +267,14 @@ if __name__ == "__main__":
     # img = imf_nb.xMatrix[31]
     # ImageProcessor.showImage(img,True,(50,50))
     # print(imf_nb.yVector[31])
-    # # img_processor = ImageProcessor("Data/Raw/train_images.npy")
-    # img = img_processor.getProcessedImage(imageIndex=31,mask_val=50,min_area=125)
+    # img_processor = ImageProcessor("Data/Raw/train_images.npy")
+    # img = img_processor.getProcessedImage(imageIndex=43,mask_val=50,min_area=125,padding=5)
     # img_processor.showImage(img)
 
     #processTestData()
-    #imf = ImageFileHandler(imagePath="Data/Processed/test_data_non_bin.npy")
-    #ImageProcessor.showImage(imf.xMatrix[5],True,(50,50))
+    imf = ImageFileHandler(imagePath="Data/Processed/train_m50_p5_a100.npy",y_index=0)
+    ImageProcessor.showImage(imf.xMatrix[31],True,(50,50))
 
     #imp = ImageProcessor("Data/Raw/test_images.npy")
     #imp.showImageAtIndex(5)
-    createProcessedData("Data/Processed/",binaryRepresentation=False)
+#    createProcessedData("Data/Processed/",binaryRepresentation=False)
