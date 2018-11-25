@@ -20,7 +20,6 @@ class ImageProcessor():
                 data = f.readlines()
             for i in range(0,len(data)):
                 self.categories[data[i].strip('\n')] = i
-            print(self.categories)
 
     def getImage(self,imageIndex,reshape=False):
         if reshape:
@@ -36,7 +35,7 @@ class ImageProcessor():
         plt.imshow(img)
         plt.show()
 
-    def getProcessedImage(self,imageIndex,mask_val=100,dims=(50,50),binaryRepresentation=False,min_area=100):
+    def getProcessedImage(self,imageIndex,mask_val=100,dims=(50,50),binaryRepresentation=False,min_area=100, padding=0):
         '''
         Sets all pixels above mask value to 255 and those below to 0 then
         Creates bounding boxes around each connected set of pixels
@@ -53,16 +52,34 @@ class ImageProcessor():
         if area < min_area:     #if bounding box area is less than the minimum area specified assume empty image
             return np.zeros(dims)
 
+
         if binaryRepresentation:
-            selected_img = masked_img[min(coords[0],coords[2]):max(coords[0],coords[2]),min(coords[1],coords[3]):max(coords[1],coords[3])]
+            selected_img = self.add_padding(padding, masked_img,coords)
             for i in range(0, len(selected_img)):
                 for j in range(0,len(selected_img[i])):
                     if selected_img[i][j] != 0:
                         selected_img[i][j] = 1
         else:
-            selected_img = img[min(coords[0],coords[2]):max(coords[0],coords[2]),min(coords[1],coords[3]):max(coords[1],coords[3])]
+            selected_img = self.add_padding(padding,img,coords)
 
         return resize(selected_img,dims)
+
+    def add_padding(self,padding,img,coords):
+        min_row = coords[0] - padding
+        max_row = coords[2] + padding
+        min_col = coords[1] - padding
+        max_col = coords[3] + padding
+
+        if min_row < 0:
+            min_row = 0
+        if max_row > len(img)-1:
+            max_row = len(img) -1
+        if min_col <0:
+            min_col = 0
+        if max_col > len(img[0]) - 1:
+            max_col = len(img[0]) - 1
+
+        return img[min_row:max_row, min_col:max_col]
 
     def mask_image(self,img,mask_val):
         img_copy = img.copy()
@@ -98,7 +115,7 @@ class ImageProcessor():
                 if i<bbox[0] or i>bbox[2] or j<bbox[1] or j>bbox[3]:
                     img[i][j] = 0
 
-    def getProcessedImages(self,mask_val=50,dims=(50,50),binaryRepresentation=False,min_area=100):
+    def getProcessedImages(self,mask_val=50,dims=(50,50),binaryRepresentation=False,min_area=100, padding=0):
         processed_images = []
         for i in range(0,len(self.images)):
             img = self.getProcessedImage(i,mask_val=mask_val,dims=dims,binaryRepresentation=binaryRepresentation,min_area=min_area)
@@ -182,18 +199,82 @@ def processTrainingData():
     labelled_imgs_b = img_processor.labelImages(processed_imgs_b)
     ImageFileHandler.saveNPYFile(labelled_imgs_b, "Data/Processed/train_data_bin.npy")
 
+def processTestData():
+    DATA_PATH = "Data/Raw/"
+
+    img_processor = ImageProcessor(filePath=DATA_PATH + "test_images.npy")
+
+    # Create Non-Binary representation
+    processed_imgs_nb = img_processor.getProcessedImages(mask_val=50,
+                                                         dims=(50, 50),
+                                                         binaryRepresentation=False,
+                                                         min_area=100)
+
+    ifm = ImageFileHandler.saveNPYFile(processed_imgs_nb, "Data/Processed/test_data_non_bin.npy")
+
+    # Create Binary Representation
+    processed_imgs_b = img_processor.getProcessedImages(mask_val=50,
+                                                        dims=(50, 50),
+                                                        binaryRepresentation=True,
+                                                        min_area=100)
+
+    ImageFileHandler.saveNPYFile(processed_imgs_b, "Data/Processed/test_data_bin.npy")
+
+
+def createProcessedData(savingFolder,binaryRepresentation = False):
+    mask_vals = (1,50,100)
+    padding_vals = (0,5,10)
+    min_area_vals = (0,100)
+
+    for mask in mask_vals:
+        for padding in padding_vals:
+            for min_area in min_area_vals:
+                img_processor = ImageProcessor(filePath="Data/Raw/train_images.npy",
+                                               labelPath="Data/Raw/train_labels.csv",
+                                               categoryPath="Data/Raw/categories.csv")
+
+                # Create Non-Binary representation
+                processed_imgs_nb = img_processor.getProcessedImages(mask_val=mask,
+                                                                     dims=(50, 50),
+                                                                     binaryRepresentation=binaryRepresentation,
+                                                                     min_area=min_area,
+                                                                     padding=padding)
+
+                labelled_imgs_nb = img_processor.labelImages(processed_imgs_nb)
+                ImageFileHandler.saveNPYFile(labelled_imgs_nb, savingFolder+"train_m{}_p{}_a{}.npy".format(mask,padding,min_area))
+                print("Saved train_m{}_p{}_a{}.npy".format(mask,padding,min_area))
+
+                img_processor = ImageProcessor(filePath="Data/Raw/test_images.npy")
+
+                # Create Non-Binary representation
+                processed_imgs_nb = img_processor.getProcessedImages(mask_val=mask,
+                                                                     dims=(50, 50),
+                                                                     binaryRepresentation=binaryRepresentation,
+                                                                     min_area=min_area,
+                                                                     padding=padding)
+
+                ImageFileHandler.saveNPYFile(processed_imgs_nb, savingFolder+"test_m{}_p{}_a{}.npy".format(mask,padding,min_area))
+                print("Saved test_m{}_p{}_a{}.npy".format(mask, padding, min_area))
+
 
 if __name__ == "__main__":
-    DATA_PROCESSED_PATH = "Data/Processed/"
-    #processTrainingData()
-
-
-    imf_nb = ImageFileHandler(imagePath=DATA_PROCESSED_PATH+"train_data_bin.npy",
-                              y_index=0)
-    img = imf_nb.xMatrix[18]
-    ImageProcessor.showImage(img,True,(50,50))
-
-
-    # img = img_processor.getProcessedImage(imageIndex=0,mask_val=50,min_area=125)
+    # DATA_PROCESSED_PATH = "Data/Processed/"
+    # #processTrainingData()
+    #
+    #
+    # imf_nb = ImageFileHandler(imagePath=DATA_PROCESSED_PATH+"train_data_bin.npy",
+    #                           y_index=0)
+    # img = imf_nb.xMatrix[31]
+    # ImageProcessor.showImage(img,True,(50,50))
+    # print(imf_nb.yVector[31])
+    # img_processor = ImageProcessor("Data/Raw/train_images.npy")
+    # img = img_processor.getProcessedImage(imageIndex=43,mask_val=50,min_area=125,padding=5)
     # img_processor.showImage(img)
 
+    #processTestData()
+    imf = ImageFileHandler(imagePath="Data/Processed/train_m50_p5_a100.npy",y_index=0)
+    ImageProcessor.showImage(imf.xMatrix[31],True,(50,50))
+
+    #imp = ImageProcessor("Data/Raw/test_images.npy")
+    #imp.showImageAtIndex(5)
+#    createProcessedData("Data/Processed/",binaryRepresentation=False)

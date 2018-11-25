@@ -1,0 +1,5 @@
+input shape: (10000, 2500)training points: : 6000
+validation points: : 2000
+test points: : 2000
+Test score: 1.5114009504318238
+Test accuracy: 0.688

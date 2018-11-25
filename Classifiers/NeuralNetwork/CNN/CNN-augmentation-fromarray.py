@@ -31,7 +31,7 @@ output_file = '5050_padding0_epochs3.txt'
 f = open(output_file, 'w')
 
 # import labels and images from file
-images = ImageFileHandler(image_src, y_index=0)
+images = ImageFileHandler(image_src)
 
 
 # In[2]:
