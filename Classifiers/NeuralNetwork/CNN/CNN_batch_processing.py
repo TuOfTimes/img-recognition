@@ -187,6 +187,7 @@ def run_CNN(image_src,epochs,batch_size,img_width,img_height,save_weights,output
 
     # this is the augmentation configuration we will use for training
     train_datagen = ImageDataGenerator(
+        rotation_range=45,
         shear_range=0.2,
         zoom_range=0.2,
         horizontal_flip=True)
