@@ -99,7 +99,7 @@ output[0]
 # In[13]:
 
 
-np.save('Data/test.npy', output)
+np.save('Data/processed_train_images.npy', output)
 
 
 # In[ ]:
