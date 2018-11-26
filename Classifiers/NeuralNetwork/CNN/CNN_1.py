@@ -252,65 +252,47 @@ def run_CNN(image_src,epochs,batch_size,img_width,img_height,save_weights,output
 
 
 if __name__ == "__main__":
-    image_src = '../../../Data/Processed/train_data_non_bin.npy'
+    epochs_list = [10]
+    batch_size_list = [32]
+    mask_val_list = [50]
+    padding_val_list = [5]
+    min_area_list = [0]
 
-    img_width, img_height = 50, 50
+    for epochs in epochs_list:
+        for batch_size in batch_size_list:
+            for mask_val in mask_val_list:
+                for padding_val in padding_val_list:
+                    for min_area in min_area_list:
+                        logging.info("E-{}, B-{}, M-{}, P-{}, A-{}".format(epochs,batch_size,mask_val,padding_val,min_area))
 
-    save_weights = 'Outputs/Weights/test.h5'
-    output_file = 'Outputs/TestScores/test.txt'
-    epochs=10
-    batch_size=32
+                        image_src = '../../../Data/Processed/train_m{}_p{}_a{}.npy'.format(mask_val,padding_val,min_area)
 
-    logging.info("Running CNN")
-    run_CNN(image_src=image_src,
-            epochs=epochs,
-            img_width=img_width,
-            img_height=img_height,
-            batch_size = batch_size,
-            save_weights=save_weights,
-            output_file=output_file)
+                        img_width, img_height = 50, 50
 
-    # epochs_list = (100,200)
-    # batch_size_list = (16,32,64)
-    # mask_val_list = (1,50,100)
-    # padding_val_list = (0,5,10)
-    # min_area_list = (0,100)
+                        save_weights = 'Outputs/Weights/e{}_b{}_m_{}_p{}_a{}.h5'.format(epochs,batch_size,mask_val,padding_val,min_area)
+                        output_file = 'Outputs/TestScores/e{}_b{}_m_{}_p{}_a{}.txt'.format(epochs,batch_size,mask_val,padding_val,min_area)
 
-    # for epochs in epochs_list:
-    #     for batch_size in batch_size_list:
-    #         for mask_val in mask_val_list:
-    #             for padding_val in padding_val_list:
-    #                 for min_area in min_area_list:
-    #                     logging.info("E-{}, B-{}, M-{}, P-{}, A-{}".format(epochs,batch_size,mask_val,padding_val,min_area))
-
-    #                     image_src = '../../../Data/Processed/train_m{}_p{}_a{}.npy'.format(mask_val,padding_val,min_area)
-
-    #                     img_width, img_height = 50, 50
-
-    #                     save_weights = 'Outputs/Weights/e{}_b{}_m_{}_p{}_a{}.h5'.format(epochs,batch_size,mask_val,padding_val,min_area)
-    #                     output_file = 'Outputs/TestScores/e{}_b{}_m_{}_p{}_a{}.txt'.format(epochs,batch_size,mask_val,padding_val,min_area)
-
-    #                     logging.info("Running CNN")
-    #                     run_CNN(image_src=image_src,
-    #                             epochs=epochs,
-    #                             img_width=img_width,
-    #                             img_height=img_height,
-    #                             batch_size = batch_size,
-    #                             save_weights=save_weights,
-    #                             output_file=output_file)
+                        logging.info("Running CNN")
+                        run_CNN(image_src=image_src,
+                                epochs=epochs,
+                                img_width=img_width,
+                                img_height=img_height,
+                                batch_size = batch_size,
+                                save_weights=save_weights,
+                                output_file=output_file)
 
 
-    #                     test_src = '../../../Data/Processed/test_m{}_p{}_a{}.npy'.format(mask_val,padding_val,min_area)
-    #                     categories_csv = '../../../Data/Raw/categories.csv'
-    #                     weight_file = save_weights
-    #                     output_csv = 'Outputs/Submissions/e{}_b{}_m_{}_p{}_a{}.csv'.format(epochs,batch_size,mask_val,padding_val,min_area)
+                        test_src = '../../../Data/Processed/test_m{}_p{}_a{}.npy'.format(mask_val,padding_val,min_area)
+                        categories_csv = '../../../Data/Raw/categories.csv'
+                        weight_file = save_weights
+                        output_csv = 'Outputs/Submissions/e{}_b{}_m_{}_p{}_a{}.csv'.format(epochs,batch_size,mask_val,padding_val,min_area)
 
 
-    #                     logging.info("Creating Submissions")
-    #                     create_submission(test_src=test_src,
-    #                                       categories_csv=categories_csv,
-    #                                       img_height=img_height,
-    #                                       img_width=img_width,
-    #                                       weight_file=weight_file,
-    #                                       output_csv=output_csv
-    #                                       )
+                        logging.info("Creating Submissions")
+                        create_submission(test_src=test_src,
+                                          categories_csv=categories_csv,
+                                          img_height=img_height,
+                                          img_width=img_width,
+                                          weight_file=weight_file,
+                                          output_csv=output_csv
+                                          )
