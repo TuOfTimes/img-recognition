@@ -15,7 +15,7 @@ import logging
     Change model by editing the number of layers in the create_model method
 '''
 
-logging.basicConfig(filename="q2.log",level=logging.INFO)
+logging.basicConfig(filename="cnn.log",level=logging.INFO)
 
 def logging_wrapper(func):
     def inner(*args, **kwargs):

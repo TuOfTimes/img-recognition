@@ -8,7 +8,6 @@ class LinearSupportVectorClassifier():
     def __init__(self,training_data_x,training_data_y):
         self.training_data_x = training_data_x
         self.training_data_y = training_data_y
-        self.initialize_classifier()
 
     def initialize_classifier(self,tol=0.0001,C=1.0):
         dual_val = True
@@ -59,23 +58,18 @@ class LinearSupportVectorClassifier():
 
         tol_vals = []
         current_tol = 0.00000001
-        while(current_tol<1):
+        while(current_tol<0.0001):
             tol_vals.append(current_tol)
             current_tol *= 10
 
         c_vals = []
         current_c_val = 0.001
-        to_add = True
-        while(current_c_val<=10000):
+        while(current_c_val<=100):
             c_vals.append(current_c_val)
-            if to_add:
-                current_c_val += (current_c_val*4)
-            else:
-                current_c_val *= 10
+            current_c_val *= 10
 
         param_grid = {"dual": [dual_val],
                       "tol" : tol_vals,
                       "C" : c_vals
                       }
-
         return param_grid
