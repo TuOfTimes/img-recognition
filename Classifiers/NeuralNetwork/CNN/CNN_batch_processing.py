@@ -97,32 +97,98 @@ def create_submission(test_src,categories_csv,weight_file,img_width,img_height,o
 @logging_wrapper
 def create_model():
     model = Sequential()
-    model.add(Conv2D(32, (3, 3), input_shape=input_shape))
-    model.add(Activation('relu'))
-    model.add(MaxPooling2D(pool_size=(2, 2)))
+    # model.add(Conv2D(32, (3, 3), input_shape=input_shape))
+    # model.add(Activation('relu'))
+    # # model.add(MaxPooling2D(pool_size=(2, 2)))
 
-    model.add(Conv2D(64, (3, 3)))
-    model.add(Activation('relu'))
-    model.add(MaxPooling2D(pool_size=(2, 2)))
+    # model.add(Conv2D(64, (3, 3)))
+    # model.add(Activation('relu'))
+    # # model.add(MaxPooling2D(pool_size=(2, 2)))
 
-    model.add(Conv2D(64, (3, 3)))
-    model.add(Activation('relu'))
-    model.add(MaxPooling2D(pool_size=(2, 2)))
+    # model.add(Conv2D(64, (3, 3)))
+    # model.add(Activation('relu'))
+    # model.add(MaxPooling2D(pool_size=(2, 2)))
 
-    model.add(Conv2D(64, (3, 3)))
-    model.add(Activation('relu'))
-    model.add(MaxPooling2D(pool_size=(2, 2)))
+    # model.add(Conv2D(64, (3, 3)))
+    # model.add(Activation('relu'))
+    # model.add(MaxPooling2D(pool_size=(2, 2)))
 
-    model.add(Conv2D(128, (3, 3)))
-    model.add(Activation('relu'))
-    model.add(MaxPooling2D(pool_size=(2, 2)))
+    # model.add(Conv2D(128, (3, 3)))
+    # model.add(Activation('relu'))
+    # model.add(MaxPooling2D(pool_size=(2, 2)))
 
+    # model.add(Dropout(0.25))
+    # model.add(Flatten())
+    # model.add(Dense(64))
+    # model.add(Activation('relu'))
+    # model.add(Dropout(0.5))
+    # model.add(Dense(31))
+    # model.add(Activation('sigmoid'))
+
+    model.add(Conv2D(filters=96, input_shape=input_shape, kernel_size=(11,11), strides=(4,4), padding='valid'))
+    model.add(Activation('relu'))
+    # Pooling 
+    model.add(MaxPooling2D(pool_size=(2,2), strides=(2,2), padding='valid'))
+    # Batch Normalisation before passing it to the next layer
+    model.add(BatchNormalization())
+
+    # 2nd Convolutional Layer
+    model.add(Conv2D(filters=256, kernel_size=(11,11), strides=(1,1), padding='valid'))
+    model.add(Activation('relu'))
+    # Pooling
+    model.add(MaxPooling2D(pool_size=(2,2), strides=(2,2), padding='valid'))
+    # Batch Normalisation
+    model.add(BatchNormalization())
+
+    # 3rd Convolutional Layer
+    model.add(Conv2D(filters=384, kernel_size=(3,3), strides=(1,1), padding='valid'))
+    model.add(Activation('relu'))
+    # Batch Normalisation
+    model.add(BatchNormalization())
+
+    # 4th Convolutional Layer
+    model.add(Conv2D(filters=384, kernel_size=(3,3), strides=(1,1), padding='valid'))
+    model.add(Activation('relu'))
+    # Batch Normalisation
+    model.add(BatchNormalization())
+
+    # 5th Convolutional Layer
+    model.add(Conv2D(filters=256, kernel_size=(3,3), strides=(1,1), padding='valid'))
+    model.add(Activation('relu'))
+    # Pooling
+    model.add(MaxPooling2D(pool_size=(2,2), strides=(2,2), padding='valid'))
+    # Batch Normalisation
+    model.add(BatchNormalization())
+
+    # Passing it to a dense layer
     model.add(Flatten())
-    model.add(Dense(64))
+    # 1st Dense Layer
+    model.add(Dense(4096, input_shape=(224*224*3,)))
     model.add(Activation('relu'))
-    model.add(Dropout(0.5))
+    # Add Dropout to prevent overfitting
+    model.add(Dropout(0.4))
+    # Batch Normalisation
+    model.add(BatchNormalization())
+
+    # 2nd Dense Layer
+    model.add(Dense(4096))
+    model.add(Activation('relu'))
+    # Add Dropout
+    model.add(Dropout(0.4))
+    # Batch Normalisation
+    model.add(BatchNormalization())
+
+    # 3rd Dense Layer
+    model.add(Dense(1000))
+    model.add(Activation('relu'))
+    # Add Dropout
+    model.add(Dropout(0.4))
+    # Batch Normalisation
+    model.add(BatchNormalization())
+
+    # Output Layer
     model.add(Dense(31))
-    model.add(Activation('sigmoid'))
+    model.add(Activation('softmax'))
 
     model.compile(loss='categorical_crossentropy',
                   optimizer='adam',
