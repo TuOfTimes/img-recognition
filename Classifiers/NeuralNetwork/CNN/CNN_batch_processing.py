@@ -163,7 +163,7 @@ def create_model(input_shape):
     # Passing it to a dense layer
     model.add(Flatten())
     # 1st Dense Layer
-    model.add(Dense(4096, input_shape=(224*224*3,)))
+    model.add(Dense(4096, input_shape=(input_shape[0]*input_shape[1]*input_shape[2],)))
     model.add(Activation('relu'))
     # Add Dropout to prevent overfitting
     model.add(Dropout(0.4))
