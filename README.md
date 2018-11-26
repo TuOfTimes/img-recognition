@@ -21,3 +21,5 @@ we will pick the best model to compete in a Kaggle Competition.
 ## Sunmissions:
 * e200_b32_m_1_p5_a0
 * e200_b64_m1_p5_a0
+* e100_b64_m_50_p0_a0 -> Highest Score
+* e200_b32_m_1_p5_a0

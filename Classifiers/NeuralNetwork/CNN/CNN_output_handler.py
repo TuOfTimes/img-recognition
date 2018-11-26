@@ -16,9 +16,9 @@ class OutputHandler():
                 data =[]
                 with open(test_folder+file_path,"r") as f:
                     data = f.readlines()
-                score = float(data[-1].split(":")[-1])
-
-                test_scores[file_path.strip(".txt")] = score
+                if len(data) == 5:
+                    score = float(data[-1].split(":")[-1])
+                    test_scores[file_path.strip(".txt")] = score
 
         return test_scores
 
@@ -31,3 +31,5 @@ if __name__ == "__main__":
     count = 0
     for key,val in sorted(oh.test_scores.items(), key=lambda kv: kv[1],reverse=True):
         print("Configuration: {}  - Test Accuracy: {} ".format(key,val))
+        count+=1
+    print(count)
