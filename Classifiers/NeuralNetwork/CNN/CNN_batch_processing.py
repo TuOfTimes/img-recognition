@@ -125,7 +125,7 @@ def create_model(input_shape):
     # model.add(Dense(31))
     # model.add(Activation('sigmoid'))
 
-    model.add(Conv2D(filters=96, input_shape=input_shape, kernel_size=(11,11), strides=(4,4), padding='valid'))
+    model.add(Conv2D(filters=96, input_shape=input_shape, kernel_size=(10,10), strides=(4,4), padding='valid'))
     model.add(Activation('relu'))
     # Pooling 
     model.add(MaxPooling2D(pool_size=(2,2), strides=(2,2), padding='valid'))
@@ -133,7 +133,7 @@ def create_model(input_shape):
     model.add(BatchNormalization())
 
     # 2nd Convolutional Layer
-    model.add(Conv2D(filters=256, kernel_size=(11,11), strides=(1,1), padding='valid'))
+    model.add(Conv2D(filters=256, kernel_size=(10,10), strides=(1,1), padding='valid'))
     model.add(Activation('relu'))
     # Pooling
     model.add(MaxPooling2D(pool_size=(2,2), strides=(2,2), padding='valid'))
