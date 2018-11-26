@@ -54,7 +54,7 @@ def create_submission(test_src,categories_csv,weight_file,img_width,img_height,o
     # In[21]:
 
 
-    model = create_model()
+    model = create_model(input_shape)
 
 
     # In[22]:
@@ -95,7 +95,7 @@ def create_submission(test_src,categories_csv,weight_file,img_width,img_height,o
             file.write('\n')
 
 @logging_wrapper
-def create_model():
+def create_model(input_shape):
     model = Sequential()
     # model.add(Conv2D(32, (3, 3), input_shape=input_shape))
     # model.add(Activation('relu'))
@@ -247,7 +247,7 @@ def run_CNN(image_src,epochs,batch_size,img_width,img_height,save_weights,output
     # In[10]:
 
 
-    model = create_model()
+    model = create_model(input_shape)
 
 
 
