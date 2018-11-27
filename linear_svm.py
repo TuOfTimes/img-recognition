@@ -26,7 +26,7 @@ def main():
     X_other, X_val, y_other, y_val = train_test_split(imf.xMatrix, imf.yVector, test_size=0.20, random_state=42)
     X_train, X_test, y_train, y_test = train_test_split(X_other, y_other, test_size=0.25, random_state=24)
 
-    c_vals = [0.001, 0.01, 0.1, 0.3, 0.5, 0.7, 0.9, 1.0]
+    c_vals = [0.001, 0.01, 0.1, 0.3, 0.5, 0.7, 0.9, 1.0,10,100]
     for c in c_vals:
         logging.info("Testing C value: {}".format(c))
         lsvc = LinearSVC(C=c, random_state=0, loss='hinge', multi_class='ovr', max_iter=1000)
@@ -46,12 +46,13 @@ def main():
 
     f.write("\nPerformance metrics for the hyper-parameters tested:\n\n")
     index = 0
-    while (index < 100 and index < len(training_acc)):
+    while (index < 100 and index < len(train_results)):
         f.write("C: {}\t| training_accuracy: | validation_accuracy: \n".format(
             c_vals[index],
             train_results[index],
             valid_results[index]))
         index += 1
+
 
 if __name__ == "__main__":
     main()
