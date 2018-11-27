@@ -121,7 +121,7 @@ def crossvalidation(X, Y):
     X_train, X_valid, X_test, Y_train, Y_valid, Y_test = split_data(X, Y)
     max_accuracy = 0
     optimal_architecture = []
-    for learning_rate in [0.01, 0.05, 0.1, 0.5, 0.7, 0.9]:
+    for learning_rate in [0.05, 0.1, 0.5, 0.7, 0.9]:
         for nb_idden_layer in [1, 2]:
             for nb_idden_node in [50, 100]:
                 architecture = [learning_rate, nb_idden_layer, nb_idden_node]
