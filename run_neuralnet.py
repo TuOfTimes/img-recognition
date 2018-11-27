@@ -111,7 +111,8 @@ def train_network(network, X_train, Y_train,l_rate, nb_epoch, nb_outputs):
 
             expected = [0 for i in range(nb_outputs)]
             expected[int(Y_train[i])] = 1
-
+            #print(expected)
+            #print(outputs)
             sum_error += sum([math.pow((expected[i]-outputs[i]) , 2) for i in range(len(expected))]) # loss function
             backward_propagate_error(network, Y_train)
             update_weights(network, row, l_rate)
@@ -123,7 +124,6 @@ def train_network(network, X_train, Y_train,l_rate, nb_epoch, nb_outputs):
 def run_network(X,Y):
 
     X_train, X_valid, X_test, Y_train, Y_valid, Y_test = split_data(X, Y)
-    logging.info('dwdwd')
     file = open("nn_results.csv", 'w')
     writer = csv.writer(file)
     writer.writerow(["alpha_value", "nb_hidden_layers", "nb_hiddenNodes", "validation_accuracy"])
@@ -152,8 +152,8 @@ def run_network(X,Y):
                     output = feed_forward(network, X_valid[i])
                     predictions.append(output.index(max(output)))
                 accuracy = accuracy_score(Y_valid, predictions)
-                print("accuracy: " + str(parameters[0]) +','+ str(parameters[1])+',' + str(parameters[2]))
-                logging.info("accuracy: " + str(parameters[0]) +','+ str(parameters[1])+',' + str(parameters[2]))
+                print("accuracy: " +accuracy+'params:' + str(parameters[0]) +','+ str(parameters[1])+',' + str(parameters[2]))
+                logging.info("accuracy: "+accuracy+'params:' + str(parameters[0]) +','+ str(parameters[1])+',' + str(parameters[2]))
                 if accuracy > max_accuracy:
                     max_accuracy = accuracy
                     optimal_params = parameters
@@ -187,12 +187,12 @@ def main3():
     print(X)
     Y= imf.yVector
     run_network(X,Y)
-  
+
     #network= initialize_network(nb_inputs, nb_hidden_layer, nb_hidden_node, nb_outputs)
     #lsvc = LinearSupportVectorClassifier(imf.xMatrix, imf.yVector)
     f.write("Data Loaded and Classifier initialized\n")
     f.write("Starting hyper-parameter tuning\n")
-    
+
     #train_network(network, X_train, Y_train, l_rate, nb_epoch, nb_outputs)
     import csv
     with open("Data/Raw/categories.csv", mode='r') as infile:
@@ -214,8 +214,8 @@ DataPath = "Data/Processed/"
 
 imf = ImageFileHandler(DataPath + "train_m50_p5_a0.npy", y_index=0)
 X=imf.xMatrix
-
+print(X[1])
 Y= imf.yVector
-
+print(Y)
 
 run_network(X,Y)
