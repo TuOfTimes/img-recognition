@@ -8,7 +8,7 @@ we will pick the best model to compete in a Kaggle Competition.
 ## Parameters We Are Testing
 
 ### FFNN
-* Learning Rate : [0.01, 0.05, 0.1, 0.5, 0.7, 0.9]
+* Learning Rate : [0.05, 0.1, 0.3, 0.5, 0.7, 0.9]
 * Number of layers :[1, 2]
 * Neurons per layer [50, 100]:
 * Padding Around Images - [0,5,10]
