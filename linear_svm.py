@@ -4,6 +4,7 @@ from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
 import logging
 import csv
+logging.basicConfig(filename="svm.log",level=logging.INFO)
 
 def logging_wrapper(func):
     def inner(*args, **kwargs):
@@ -52,6 +53,31 @@ def main():
             train_results[index],
             valid_results[index]))
         index += 1
+
+    max_val,index = get_max(valid_results)
+    c_max = c_vals[index]
+    f.write("\n The best validation performance was at C={} with an accuracy of {}\n".format(c_max,max_val))
+
+    lsvc = LinearSVC(C=c_max, random_state=0, loss='hinge', multi_class='ovr', max_iter=1000)
+    lsvc.fit(X_train, y_train)
+    y_pred_test = lsvc.predict(X_test)
+    test_acc = accuracy_score(y_test,y_pred_test)
+
+    f.write("\n Performance with C={}:\n")
+    f.write("The accuracy with training data is {}\n".format(train_results[index]))
+    f.write("The accuracy with validation data is {}\n".format(valid_results[index]))
+    f.write("The accuracy with test data is {}\n".format(test_acc))
+
+def get_max(l):
+    if len(l) == 0:
+        return None
+    max = l[0]
+    index=0;
+    for i in range(1,len(l)):
+        if l[i] > max:
+            max = l[i]
+            index = i
+    return max,index
 
 
 if __name__ == "__main__":
